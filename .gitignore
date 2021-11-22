@@ -1,0 +1,15 @@
+
+# Ignore objects and archived libraries
+*.a
+*.o
+*.so
+
+
+# Ignore temporaries
+*~
+
+# Ignore Mac specific files
+.DS_Store
+
+# Ignore any .Rhistory-ies
+.Rhistory

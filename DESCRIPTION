@@ -1,0 +1,17 @@
+Package: assignment
+Version: 0.1
+Date: 2021-11-19
+Title: Solve the Assignment Problem
+Description: Solve the "Assignment Problem." Find minimum cost
+	     solution.
+Author: Andrew Whiteman <awhitem@umich.edu>
+Maintainer: Andrew Whiteman <awhitem@umich.edu>
+License: GPL (>= 2)
+Depends: R (>= 3.0.2),
+	 Rcpp (>= 0.12.17),
+	 RcppEigen (>= 0.3.3.4.0)
+LinkingTo: Rcpp,
+	   RcppEigen
+Imports: 
+Suggests: devtools
+RoxygenNote: 7.1.2

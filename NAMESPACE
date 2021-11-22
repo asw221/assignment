@@ -1,0 +1,13 @@
+
+useDynLib( assignment )
+
+import( RcppEigen )
+importFrom( Rcpp, sourceCpp )
+
+
+export(
+  "abcost", "assignment.cost",
+  "ctc",
+  "simulate.difficult.cost"
+)
+
