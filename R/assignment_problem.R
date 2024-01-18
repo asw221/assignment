@@ -74,8 +74,11 @@ abcost <- function(
   ct[ct == 0] <- .unpaired
   cost[1:nrow(ct), 1:ncol(ct)] <- ct
   if ( .names ) {
-    colnames(cost)[1:length(ua)] <- as.character(ua)
-    rownames(cost)[1:length(ub)] <- as.character(ub)
+    cn <- rn <- rep("?", n)
+    cn[ 1:length(ua) ] <- as.character(ua)
+    rn[ 1:length(ub) ] <- as.character(ub)
+    colnames(cost) <- cn
+    rownames(cost) <- rn
   }
   cost
 }
@@ -91,15 +94,19 @@ abcost <- function(
 #' In the solution, we assume that A is the index set of the *columns*
 #' of the cost matrix \eqn{C}.
 #'
-#' @param cost  Square cost matrix
-#' @param .tol  Tolerance for equivalence of non-integer costs.
-#'              If not provided, costs are coerced to integer values
+#' @param cost  Square cost matrix.
+#' @param .eps  Tolerance for equivalence of non-integer costs.
+#'              That is, an \eqn{\epsilon > 0} such that two values
+#'              \eqn{x} and \eqn{y} can be taken as equivalent for
+#'              practical purposes when \eqn{|x - y| < \epsilon}.
+#'              Unused/not needed if \code{cost} is a matrix of integers.
 #'
 #' @return The map \eqn{f(A)}
 #'
 #' @examples
 #' C <- simulate.difficult.cost(10)  # Cost matrix
-#' ctc(C)
+#' map <- ctc(C)
+#' sum(diag( C[map, ] )) == attr(map, "cost")  # TRUE
 #'
 #' @seealso \code{\link{abcost}}, \code{\link{simulate.difficult.cost}}
 #'
@@ -109,15 +116,14 @@ abcost <- function(
 #' Discrete Applied Mathematics 18.2 (1987): 137-153.
 #' (\href{https://www.sciencedirect.com/science/article/pii/0166218X87900163}{sciencedirect.com})
 #'
-ctc <- function(cost, .tol = NA) {
+ctc <- function(cost, .eps = 1e-6) {
   if ( nrow(cost) != ncol(cost) )
     stop("Cost matrix should be square")
-  if ( is.na(.tol) || is.null(.tol) ) {
-    cost <- matrix(as.integer(cost), nrow(cost))
+  if ( is.integer(cost) ) {
     x <- .Call("ctc_integer_", cost, PACKAGE = "assignment") + 1L
   } else {
-    .tol <- abs(.tol[1L])
-    x <- .Call("ctc_double_", cost, .tol, PACKAGE = "assignment") + 1L
+    .eps <- abs(.eps[1L])
+    x <- .Call("ctc_double_", cost, .eps, PACKAGE = "assignment") + 1L
   }
   structure(x, cost = assignment.cost(cost, x))
 }
@@ -139,3 +145,26 @@ simulate.difficult.cost <- function(n) {
 }
 
 
+
+
+
+
+#' Relabel \code{x} to match \code{reference} based on minimum cost
+#' solution
+#'
+#' @param x  Set of labels to be recoded
+#' @param reference  Set of reference labels to match
+#'
+#' @return \code{x}, but relabeld to match the values in
+#'         \code{reference} as closely as possible
+#'
+relabel <- function(x, reference) {
+  stopifnot(length(x) == length(reference))
+  u <- sort(unique(reference))
+  ul <- sort(unique(reference))
+  reference <- as.integer(factor(reference, levels = u))
+  x <- as.integer(factor(x, levels = ul))
+  S <- assignment::abcost(reference, x, .names = FALSE)
+  map <- assignment::ctc( S )
+  u[ match(x, map) ]
+}

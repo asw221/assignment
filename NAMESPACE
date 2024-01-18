@@ -8,6 +8,7 @@ importFrom( Rcpp, sourceCpp )
 export(
   "abcost", "assignment.cost",
   "ctc",
+  "relabel",
   "simulate.difficult.cost"
 )
 

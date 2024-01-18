@@ -4,13 +4,16 @@
 \alias{ctc}
 \title{Solve the Assignment Problem}
 \usage{
-ctc(cost, .tol = NA)
+ctc(cost, .eps = 1e-06)
 }
 \arguments{
-\item{cost}{Square cost matrix}
+\item{cost}{Square cost matrix.}
 
-\item{.tol}{Tolerance for equivalence of non-integer costs.
-If not provided, costs are coerced to integer values}
+\item{.eps}{Tolerance for equivalence of non-integer costs.
+That is, an \eqn{\epsilon > 0} such that two values
+\eqn{x} and \eqn{y} can be taken as equivalent for
+practical purposes when \eqn{|x - y| < \epsilon}.
+Unused/not needed if \code{cost} is a matrix of integers.}
 }
 \value{
 The map \eqn{f(A)}
@@ -25,7 +28,8 @@ of the cost matrix \eqn{C}.
 }
 \examples{
 C <- simulate.difficult.cost(10)  # Cost matrix
-ctc(C)
+map <- ctc(C)
+sum(diag( C[map, ] )) == attr(map, "cost")  # TRUE
 
 }
 \references{
