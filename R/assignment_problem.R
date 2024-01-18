@@ -117,7 +117,9 @@ abcost <- function(
 #' (\href{https://www.sciencedirect.com/science/article/pii/0166218X87900163}{sciencedirect.com})
 #'
 ctc <- function(cost, .eps = 1e-6) {
-  if ( nrow(cost) != ncol(cost) )
+  stopifnot( is.numeric(cost) )
+  stopifnot( is.numeric(.eps) )
+  if ( NROW(cost) != NCOL(cost) )
     stop("Cost matrix should be square")
   if ( is.integer(cost) ) {
     x <- .Call("ctc_integer_", cost, PACKAGE = "assignment") + 1L
